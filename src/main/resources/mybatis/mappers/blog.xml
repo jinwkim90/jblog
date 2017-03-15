@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog">
+
+	<update id="insertblogbasic" parameterType="blogvo">
+		<![CDATA[
+		update blog set title=#{title}, logo=#{saveFileName} where user_id=#{userId}
+		]]>
+	</update>
+
+	<select id="selectfilename" parameterType="string" resultType="string">
+		<![CDATA[
+			select logo as saveFileName from blog where user_id = #{userId}
+		
+		]]>
+	</select>
+
+	<insert id="insertcategory" parameterType="blogvo">
+		<![CDATA[
+			insert into category values(seq_category.nextval, #{catName}, #{catDesc}, sysdate, #{userId})
+		
+		]]>
+	</insert>
+
+	<select id="selectcategory" parameterType="string" resultType="blogvo">
+		<![CDATA[
+		select rownum, catNo, catName, catDesc from (select rownum, cat_no as catNo, name as catName, description as catDesc from category where user_id=#{userId} order by pub_date desc)
+		]]>
+
+	</select>
+
+	<select id="selectcategoryName" parameterType="string"
+		resultType="blogvo">
+		<![CDATA[
+		select name as catName, cat_no as catNo from category where user_id=#{userId} order by pub_date desc
+		]]>
+
+	</select>
+
+	<insert id="insertpost" parameterType="map">
+		<![CDATA[
+			insert into post values(seq_post.nextval, #{postTitle}, #{postContent}, sysdate, #{catNo})
+		
+		]]>
+
+	</insert>
+
+	<select id="selectcategoryNo" parameterType="blogvo" resultType="string">
+		<![CDATA[
+		select cat_no as catNo from category where user_id=#{userId} and trim(name)=#{catName}
+		]]>
+
+	</select>
+
+	<select id="selectpost" parameterType="long" resultType="blogvo">
+		<![CDATA[
+			select post_no as postNo, title as postTitle, content postContent, pub_date as postPubDate, cat_no as catNo from post where cat_no=#{catNo} order by pub_date desc
+		]]>
+	</select>
+	
+	<select id="selectonepost" parameterType="blogvo" resultType="blogvo">
+		<![CDATA[
+			select title as postTitle, content as postContent from post where cat_no=#{catNo} and post_no=#{postNo}
+		]]>
+	</select>
+	
+	<select id="selectpostbymaxval" parameterType="long" resultType="blogvo">
+	<![CDATA[
+		select title as postTitle, content as postContent from post where post_no = (select max(post_no) from post where cat_no=#{catNo})
+		]]>
+	</select>
+	
+	<select id="selectdefaultpost" parameterType="string" resultType="blogvo">
+	<![CDATA[
+	select title as postTitle, content as postContent, post_no as postNo, post.cat_no as catNo from post where post_no=(select max(post_no) from post, category where post.CAT_NO=category.CAT_NO and category.USER_ID=#{userId})
+	]]>
+	</select>
+	<select id="selectdefaultpostlist" parameterType="string" resultType="blogvo">
+	<![CDATA[
+	select title as postTitle, content as postContent, pub_date as postPubDate, post.cat_no as postNo, post_no as postNo from post where post.CAT_NO = (select cat_no from post where post_no = #{postNo})
+	]]>
+	</select>
+	
+	<select id="selectblogtitle" parameterType="string" resultType="string">
+	<![CDATA[
+	 select title from blog where user_id=#{userId}
+	]]>
+	</select>
+	
+	<delete id="deletecategory" parameterType="long">
+	<![CDATA[
+	delete from category where cat_no=#{catNo}
+	]]>
+	</delete>
+
+</mapper>

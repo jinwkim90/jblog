@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="users">
+
+
+	<insert id="insertuser" parameterType="uservo">
+		<![CDATA[
+		insert into users values(#{userId}, #{name}, #{password}, sysdate)
+		]]>
+	</insert>
+
+	<insert id="insertblogdefault" parameterType="uservo">
+		<![CDATA[
+		insert into blog(user_id) values(#{userId})
+		]]>
+	</insert>
+
+	<insert id="insertcatdefault" parameterType="uservo">
+		<![CDATA[
+		insert into category(cat_no, user_id) values(seq_category.nextval, #{userId})
+		]]>
+	</insert>
+
+	<select id="selectuser" parameterType="string" resultType="string">
+		<![CDATA[
+		
+		select user_id from users where user_id=#{id}
+		]]>
+	</select>
+
+	<select id="selectuserauth" parameterType="string" resultType="string">
+		<![CDATA[
+		select user_id from users where user_id=#{id}
+		]]>
+	</select>
+
+	<select id="finduserinfo" parameterType="uservo" resultType="uservo">
+		<![CDATA[
+		select user_id as userId, name, password from users where user_id=#{userId} and password=#{password}
+		]]>
+	</select>
+
+</mapper>
